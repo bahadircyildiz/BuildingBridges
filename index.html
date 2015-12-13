@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="scripts/jquery.min.js"></script>
+	<script type="text/javascript" src="scripts/angular.min.js"></script>
+	<script type="text/javascript" src="scripts/sift.min.js"></script>
+	<script type="text/javascript" src="scripts/bootstrap.js"></script>
+	<link rel="stylesheet" href="styles/bootstrap.css" />
+	<title>CEN 504 Advanced Algorithms Building Bridges Assignment</title>
+</head>
+<body ng-app="buildingBridges" ng-controller="global">
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">CEN 504 Advanced Algorithms Building Bridges Assignment</a>
+				<a class="navbar-text navbar-right pull-right" href="">Bahadir Can Yildiz</a>
+			</div>
+		</div>
+	</nav>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="panel-group">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title"> Assignment Briefing </h4>
+						</div>
+						<div class="panel-collapse collapse am-collase in">
+							<div class="panel-body">
+								<p>You are given a two-dimensional map with a river passing through its center horizontally. Given the x-coordinates of n cities on the southern bank of the river with x-coordinates a1, a2 ... an and n cities on the northern bank with x-coordinates b1, b2 ... bn. Clearly, for each city on the southern bank there is a corresponding city on the northern bank.Without loss of generality assume that the x-coordinates in the southern bank is given in increasing order.You are asked to build bridges between pair of cities in northern and southern banks of the river as many as possible such that no two bridges cross. In other words you must build as many non-crossing bridges as possible.When building bridges between cities, you can only connect city i on the northern bank to city i on the southern bank. </p>
+								<ol>
+									<li>Design a brute force algorithm and find its running time.</li>
+									<li>Design a divide and conquer algorithm and find its running time.</li>
+									<li>Design a dynamic programming algorithm and find its running time.</li>
+								</ol>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-3">
+				<div class="panel-group">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">Bridge Numbers</h4>
+						</div>
+						<div class="panel-collapse collapse am-collase in">
+							<div class="panel-body">
+								<div class="row">
+									<div class="col-xs-9">
+										<table class="table">
+											<thead>
+												<tr>
+													<th>Northern Bank</th>
+													<th>Southern Bank</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="node in bank track by $index">
+													<td>{{$index+1}}</td>
+													<td><input type="number" class="form-control" min="1" max="{{bank.length}}" ng-model="node" /></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<div class="col-xs-3">
+										<a href="" class="btn btn-default" ng-click="bank.modeNode(1)"><span class="glyphicon glyphicon-plus-sign"></span></a>
+										<a href="" class="btn btn-default" ng-click="bank.modeNode(-1)"><span class="glyphicon glyphicon-minus-sign"></span></a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-9">
+				<div class="panel-group">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">Console Panel</h4>
+						</div>
+						<div class="panel-collapse collapse am-collase in">
+							<div class="panel-body">
+								<div class="row">
+									<a href="" class="btn btn-success" ng-click="start">Start</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+	<script type="text/javascript" src="scripts/controller.js"></script>
+	<script type="text/javascript" src="scripts/core.js"></script>
+</html>
