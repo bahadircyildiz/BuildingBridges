@@ -9,44 +9,56 @@ function Controller($scope){
 	}
 
 	$scope.start = function(){
-		var bank = $scope.bank;
+		var bank = angular.copy($scope.bank);
 		var hasDupe = checkDupe(bank);
 		if(hasDupe){
 			alert("Southern Bank has duplicated nodes.")
 		}
 		else{
 			var t1, t2, result, logs = [];
+			bank = angular.copy($scope.bank);
 			t1 = performance.now();
 			result = bruteForce(bank);
 			t2 = performance.now();
-			logs.push({type: "Brute Force", result: result, time: t2-t1 });
+			logs.push({type: "Brute Force", result: result, time: Math.ceil(t2-t1) });
 			$scope.logs = logs;
-			t1 = performance.now();
-			result = divideAndConquer(bank);
-			t2 = performance.now();
-			logs.push({type: "Divide & Conquer", result: result, time: t1-t2 });
-			t1 = performance.now();
-			result = dynamic(bank);
-			t2 = performance.now();
-			logs.push({type: "Dynamic Programming", result: result, time: t1-t2 });
+			//t1 = performance.now();
+			//result = divideAndConquer(bank);
+			//t2 = performance.now();
+			//logs.push({type: "Divide & Conquer", result: result, time: t1-t2 });
+			//t1 = performance.now();
+			//result = dynamic(bank);
+			//t2 = performance.now();
+			//logs.push({type: "Dynamic Programming", result: result, time: t1-t2 });
 		}
 	}
 }
-function checkDupe(bank) {
-	var sortedBank = bank.sort(function(a,b){
+function checkDupe(arr) {
+	var sortedBank = arr.sort(function(a,b){
 		return a-b;
 	});
+	var hasDupe = false;
 	console.log(sortedBank);
 	sortedBank.forEach(function(element,index){
-		if(element != index) return true;
+		if(element != index) hasDupe = true;
 	})
-	return false;
+	return hasDupe;
 	
 }
 
 function bruteForce(bank) {
 	var allSubsets = subsets(bank, 1);
-	allSubsets.findIncrementing();
+	console.log(allSubsets);
+	allSubsets.forEach(function(s1,index){
+		var prevNode = 0;
+		s1.forEach(function(s2){
+			if(s2 >= prevNode)
+				prevNode = s2;
+			else{
+				allSubsets.splice(index, 1);
+			}
+		})
+	})
 	return findLongest(allSubsets);
 }
 
@@ -75,9 +87,10 @@ function subsets(a, min) {
 function findLongest(a){
 	var maxwidth = 0, result;
 	a.forEach(function(element){
-		if(element.length >= maxwidth)
+		if(element.length >= maxwidth){
 			maxwidth = element.length;
 			result = element;
+		}
 	})
 	return result;
 }
