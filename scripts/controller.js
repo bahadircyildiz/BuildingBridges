@@ -1,6 +1,8 @@
 function Controller($scope){
 	$scope.bank = [0];
 	
+	$scope.processing = false;
+	
 	$scope.debugMode = false;
 	
 	$scope.unitTest = function(){
@@ -15,6 +17,7 @@ function Controller($scope){
 			alert("Southern Bank has duplicated nodes.")
 		}
 		else{
+			$scope.processing = true;
 			var t1, t2, result, logs = [];
 			bank = angular.copy($scope.bank);
 			t1 = performance.now();
@@ -30,6 +33,7 @@ function Controller($scope){
 			//result = dynamic(bank);
 			//t2 = performance.now();
 			//logs.push({type: "Dynamic Programming", result: result, time: t1-t2 });
+			$scope.processing = false;
 		}
 	}
 }
@@ -49,40 +53,46 @@ function checkDupe(arr) {
 function bruteForce(bank) {
 	var allSubsets = subsets(bank, 1);
 	console.log(allSubsets);
-	allSubsets.forEach(function(s1,index){
+	var targets = [];
+	for(var x = 0; x<allSubsets.length; x++){
 		var prevNode = 0;
-		s1.forEach(function(s2){
+		var indexPlaced = false;
+		allSubsets[x].forEach(function(s2){
 			if(s2 >= prevNode)
 				prevNode = s2;
 			else{
-				allSubsets.splice(index, 1);
+				if(!indexPlaced) {
+					console.log("Element Discarded " + allSubsets[x]);
+					targets.push(x);
+					indexPlaced = true;
+				}
 			}
 		})
+		
+	}
+	console.log(targets);
+	var counter = 0;
+	targets.forEach(function(element){
+		allSubsets.splice(element - counter, 1);
+		counter++;
 	})
 	return findLongest(allSubsets);
 }
 
 function subsets(a, min) {
-    var fn = function(n, src, got, all) {
-        if (n == 0) {
-            if (got.length > 0) {
-                all[all.length] = got;
-            }
-            return;
-        }
-        for (var j = 0; j < src.length; j++) {
-            fn(n - 1, src.slice(j + 1), got.concat([src[j]]), all);
-        }
-        return;
-    }
-    var all = [];
-    for (var i = min; i < a.length; i++) {
-        fn(i, a, [], all);
-    }
-    all.push(a);
-    return all;
+	var res = [];
+	for (var i = 0; i < Math.pow(2, a.length); i++) {
+		var bin = (i).toString(2), set = [];
+		bin = new Array((a.length-bin.length)+1).join("0")+bin;
+		for (var j = 0; j < bin.length; j++) {
+			if (bin[j] === "1") {
+				set.push(a[j]);
+			}
+		}
+		res.push(set);
+	}
+	return res;
 }
-
 
 function findLongest(a){
 	var maxwidth = 0, result;
