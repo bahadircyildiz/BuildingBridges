@@ -1,81 +1,83 @@
 function Controller($scope){
-	$scope.bank = [1];
+	$scope.bank = [0];
 	
 	$scope.debugMode = false;
 	
 	$scope.unitTest = function(){
-		var processNumber = 100;
-		var i = 0;
-		var lambda = $scope.lambda;
-		var u1= $scope.u1;
-		var u2=	$scope.u2;
-		while(i < processNumber){
-			lambda = $scope.exponential(lambda);
-			u1 = $scope.exponential(u1);
-			u2 = $scope.exponential(u2);
-			$scope.processes.addProcess(lambda, u1, u2);
-			i++	
-		}
+		$scope.bank = [0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15];
 		$scope.start();
 	}
-	
-	
-	
+
 	$scope.start = function(){
-		var processes = angular.copy($scope.processes);
-		var systemClock = 0, arrivalTime = processes[0].interArrivalTime , departTime1 = Infinity, departTime2 = Infinity, d1iIsSet = false, d2IsSet = false;
-		var queue1 = [], queue2 = []; 
-		var logs = [], log = {};
-		var tempvar;
-		log = {systemClock: systemClock, arrivalTime: arrivalTime, departTime1: departTime1, departTime2: departTime2, queue1: queue1.length, queue2: queue2.length};
-		logs.push(log);
-		systemClock = processes[0].interArrivalTime;
-		var arrive = function(){
-			arrivalTime = systemClock + processes[0].interArrivalTime;
-			queue1.push(processes[0]);
-			processes.splice(0,1);
-			if(processes.length == 0) arrivalTime = Infinity; else arrivalTime = systemClock + processes[0].interArrivalTime;
-			if(!d1iIsSet) {
-				if (arrivalTime == Infinity) departTime1 = logs[logs.length-1].departTime1;
-				else departTime1 = systemClock + queue1[0].serverTime1;
-				if(departTime1 == Infinity) departTime1 = systemClock + queue1[0].serverTime1;
-				d1iIsSet = true;
-			}
-			log = {systemClock: systemClock, arrivalTime: arrivalTime, departTime1: departTime1, departTime2: departTime2, queue1: queue1.length, queue2: queue2.length};
-			logs.push(log);
+		var bank = $scope.bank;
+		var hasDupe = checkDupe(bank);
+		if(hasDupe){
+			alert("Southern Bank has duplicated nodes.")
 		}
-		
-		var depart1 = function(){
-			queue2.push(queue1[0]);
-			queue1.splice(0,1);
-			queue1[0] ? departTime1 = systemClock + queue1[0].serverTime1 : departTime1 = Infinity;
-			d1iIsSet = false;
-			if(!d2IsSet){
-				departTime2 = systemClock + queue2[0].serverTime2;
-				d2IsSet = true;
-			}
-			log = {systemClock: systemClock, arrivalTime: arrivalTime, departTime1: departTime1, departTime2: departTime2, queue1: queue1.length, queue2: queue2.length};
-			logs.push(log);
+		else{
+			var t1, t2, result, logs = [];
+			t1 = performance.now();
+			result = bruteForce(bank);
+			t2 = performance.now();
+			logs.push({type: "Brute Force", result: result, time: t2-t1 });
+			$scope.logs = logs;
+			t1 = performance.now();
+			result = divideAndConquer(bank);
+			t2 = performance.now();
+			logs.push({type: "Divide & Conquer", result: result, time: t1-t2 });
+			t1 = performance.now();
+			result = dynamic(bank);
+			t2 = performance.now();
+			logs.push({type: "Dynamic Programming", result: result, time: t1-t2 });
 		}
-		var depart2 = function(){
-			queue2.splice(0,1);
-			d2IsSet = false;
-			queue2[0] ? departTime2 = systemClock + queue2[0].serverTime2 : departTime2 = Infinity;
-			log = {systemClock: systemClock, arrivalTime: arrivalTime, departTime1: departTime1, departTime2: departTime2, queue1: queue1.length, queue2: queue2.length};
-			logs.push(log);
-		}
-		
-		while (processes.length != 0 || queue1.length != 0 || queue2.length != 0){
-			systemClock = Math.min(arrivalTime, departTime1, departTime2);
-			if(systemClock == Infinity) break;
-			if(systemClock == arrivalTime) arrive();
-			systemClock = Math.min(arrivalTime, departTime1, departTime2);
-			if(systemClock == Infinity) break;
-			if(systemClock == departTime1) depart1();
-			systemClock = Math.min(arrivalTime, departTime1, departTime2);
-			if(systemClock == Infinity) break;
-			if(systemClock == departTime2) depart2();
-		}
-		$scope.logs = logs;		
 	}
+}
+function checkDupe(bank) {
+	var sortedBank = bank.sort(function(a,b){
+		return a-b;
+	});
+	console.log(sortedBank);
+	sortedBank.forEach(function(element,index){
+		if(element != index) return true;
+	})
+	return false;
+	
+}
+
+function bruteForce(bank) {
+	var allSubsets = subsets(bank, 1);
+	allSubsets.findIncrementing();
+	return findLongest(allSubsets);
+}
+
+function subsets(a, min) {
+    var fn = function(n, src, got, all) {
+        if (n == 0) {
+            if (got.length > 0) {
+                all[all.length] = got;
+            }
+            return;
+        }
+        for (var j = 0; j < src.length; j++) {
+            fn(n - 1, src.slice(j + 1), got.concat([src[j]]), all);
+        }
+        return;
+    }
+    var all = [];
+    for (var i = min; i < a.length; i++) {
+        fn(i, a, [], all);
+    }
+    all.push(a);
+    return all;
+}
+
+
+function findLongest(a){
+	var maxwidth = 0, result;
+	a.forEach(function(element){
+		if(element.length >= maxwidth)
+			maxwidth = element.length;
+			result = element;
+	})
+	return result;
 }
