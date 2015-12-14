@@ -20,19 +20,19 @@ function Controller($scope){
 			$scope.processing = true;
 			var t1, t2, result, logs = [];
 			bank = angular.copy($scope.bank);
-			t1 = performance.now();
+/* 			t1 = performance.now();
 			result = bruteForce(bank);
 			t2 = performance.now();
-			logs.push({type: "Brute Force", result: result, time: Math.ceil(t2-t1) });
-			$scope.logs = logs;
-			//t1 = performance.now();
-			//result = divideAndConquer(bank);
-			//t2 = performance.now();
-			//logs.push({type: "Divide & Conquer", result: result, time: t1-t2 });
-			//t1 = performance.now();
-			//result = dynamic(bank);
-			//t2 = performance.now();
-			//logs.push({type: "Dynamic Programming", result: result, time: t1-t2 });
+			logs.push({type: "Brute Force", result: result, time: Math.ceil(t2-t1) }); */
+/* 			t1 = performance.now();
+			result = divideAndConquer(0, bank.length-1, bank);
+			t2 = performance.now();
+			logs.push({type: "Divide & Conquer", result: result, time: Math.ceil(t2-t1) }); */
+			t1 = performance.now();
+			result = dynamic(bank);
+			t2 = performance.now();
+			logs.push({type: "Dynamic Programming", result: result, time: Math.ceil(t2-t1) });
+			$scope.logs = logs; 
 			$scope.processing = false;
 		}
 	}
@@ -42,7 +42,6 @@ function checkDupe(arr) {
 		return a-b;
 	});
 	var hasDupe = false;
-	console.log(sortedBank);
 	sortedBank.forEach(function(element,index){
 		if(element != index) hasDupe = true;
 	})
@@ -52,7 +51,6 @@ function checkDupe(arr) {
 
 function bruteForce(bank) {
 	var allSubsets = subsets(bank, 1);
-	console.log(allSubsets);
 	var targets = [];
 	for(var x = 0; x<allSubsets.length; x++){
 		var prevNode = 0;
@@ -62,7 +60,6 @@ function bruteForce(bank) {
 				prevNode = s2;
 			else{
 				if(!indexPlaced) {
-					console.log("Element Discarded " + allSubsets[x]);
 					targets.push(x);
 					indexPlaced = true;
 				}
@@ -70,7 +67,6 @@ function bruteForce(bank) {
 		})
 		
 	}
-	console.log(targets);
 	var counter = 0;
 	targets.forEach(function(element){
 		allSubsets.splice(element - counter, 1);
@@ -103,4 +99,59 @@ function findLongest(a){
 		}
 	})
 	return result;
+}
+
+function divideAndConquer(start, end, arr){
+	if (start >= end){
+		return [arr[start]];
+	}
+	else{
+		var q = Math.floor((start+end)/2)
+		var subsets1 = divideAndConquer(start, q, arr);
+		var subsets2 = divideAndConquer(q+1, end, arr);
+		var result = bruteForce(subsets1).concat(bruteForce(subsets2));
+		return result;
+	}
+}
+
+function dynamic(arr){
+	var index = 0,
+      indexWalker,
+    	longestIncreasingSequence,
+    	i,
+    	il,
+    	j;
+    indexWalker = [index];
+	for (i = 1, il = arr.length; i < il; i++) {		
+        if (arr[i] < arr[indexWalker[index]]) {
+        	for (j = 0; j <= index; j++) {
+                if (arr[i] < arr[indexWalker[j]] && (!j || arr[i] > arr[indexWalker[j-1]])) {
+                    indexWalker[j] = i;
+                    break;
+                }
+            }
+        } else if (arr[i] > arr[indexWalker[index]] || (arr[i] === arr[indexWalker[index]] && !strict))  {
+            indexWalker[++index] = i;
+        }
+		
+    }
+
+	longestIncreasingSequence = new Array(index + 1);
+	longestIncreasingSequence[index] = arr[indexWalker[index]];
+	for (i = index - 1; i >= 0; i--) {
+		if (indexWalker[i] < indexWalker[i + 1]) {
+            longestIncreasingSequence[i] = arr[indexWalker[i]];
+        } else {
+            for ( j = indexWalker[i + 1] - 1; j >= 0; j--) {
+                if ((arr[j] > arr[indexWalker[i]] && arr[j] < arr[indexWalker[i + 1]]) || 
+                	(arr[j] >= arr[indexWalker[i]] && arr[j] <= arr[indexWalker[i + 1]]) ){
+                    longestIncreasingSequence[i] = arr[j];
+                    indexWalker[i] = j;
+                    break;
+                }
+            }
+        }
+    }
+
+    return longestIncreasingSequence;
 }

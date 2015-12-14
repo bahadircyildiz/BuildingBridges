@@ -92,7 +92,7 @@
 										<span ng-show="processing">Processing</span>
 									</div>
 									<div class="row" ng-show="logs">
-										<table class="table">
+										<table class="table container">
 											<thead>
 												<tr>
 													<th>Process Type</th>
@@ -104,7 +104,7 @@
 												<tr ng-repeat="log in logs">
 													<td>{{log.type}}</td>
 													<td>{{log.result}}</td>
-													<td>{{log.time}}</td>
+													<td>{{log.time}} ms</td>
 												</tr>
 											</tbody>
 										</table>
