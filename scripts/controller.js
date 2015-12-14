@@ -20,14 +20,14 @@ function Controller($scope){
 			$scope.processing = true;
 			var t1, t2, result, logs = [];
 			bank = angular.copy($scope.bank);
-/* 			t1 = performance.now();
+			t1 = performance.now();
 			result = bruteForce(bank);
 			t2 = performance.now();
-			logs.push({type: "Brute Force", result: result, time: Math.ceil(t2-t1) }); */
-/* 			t1 = performance.now();
+			logs.push({type: "Brute Force", result: result, time: Math.ceil(t2-t1) });
+			t1 = performance.now();
 			result = divideAndConquer(0, bank.length-1, bank);
 			t2 = performance.now();
-			logs.push({type: "Divide & Conquer", result: result, time: Math.ceil(t2-t1) }); */
+			logs.push({type: "Divide & Conquer", result: result, time: Math.ceil(t2-t1) });
 			t1 = performance.now();
 			result = dynamic(bank);
 			t2 = performance.now();
@@ -51,28 +51,27 @@ function checkDupe(arr) {
 
 function bruteForce(bank) {
 	var allSubsets = subsets(bank, 1);
-	var targets = [];
+	var maxwidth = allSubsets[0].length, result = allSubsets[0];
 	for(var x = 0; x<allSubsets.length; x++){
 		var prevNode = 0;
-		var indexPlaced = false;
-		allSubsets[x].forEach(function(s2){
-			if(s2 >= prevNode)
+		var valid = true;
+		allSubsets[x].forEach(function(s2,index){
+			if(s2 >= prevNode){
 				prevNode = s2;
-			else{
-				if(!indexPlaced) {
-					targets.push(x);
-					indexPlaced = true;
+				if((index == allSubsets[x].length -1) && valid){
+					if((allSubsets[x].length > maxwidth) || (allSubsets[x].length == maxwidth && s2 <= result[result.length-1])) {
+						maxwidth = allSubsets[x].length;
+						result = allSubsets[x];
+					}
 				}
+			}
+			else{
+				valid = false;
 			}
 		})
 		
 	}
-	var counter = 0;
-	targets.forEach(function(element){
-		allSubsets.splice(element - counter, 1);
-		counter++;
-	})
-	return findLongest(allSubsets);
+	return result;
 }
 
 function subsets(a, min) {
@@ -88,17 +87,6 @@ function subsets(a, min) {
 		res.push(set);
 	}
 	return res;
-}
-
-function findLongest(a){
-	var maxwidth = 0, result;
-	a.forEach(function(element){
-		if(element.length >= maxwidth){
-			maxwidth = element.length;
-			result = element;
-		}
-	})
-	return result;
 }
 
 function divideAndConquer(start, end, arr){
