@@ -95,9 +95,9 @@ function divideAndConquer(start, end, arr){
 	}
 	else{
 		var q = Math.floor((start+end)/2)
-		var subsets1 = divideAndConquer(start, q, arr);
-		var subsets2 = divideAndConquer(q+1, end, arr);
-		var result = bruteForce(subsets1).concat(bruteForce(subsets2));
+		var subsets1 = bruteForce(divideAndConquer(start, q, arr));
+		var subsets2 = bruteForce(divideAndConquer(q+1, end, arr));
+		var result = subsets1.concat(subsets2);
 		return result;
 	}
 }
